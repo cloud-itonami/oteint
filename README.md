@@ -113,21 +113,32 @@ src/oteint/
   registry.cljc              convergence predicates (ready-to-attribute? etc.)
   phase.cljc                 node list + run-tick + run-tick-chartered (G12)
   heartbeat.cljc             silenOteintReview — the only autonomous act (dry-run)
-  store.cljc                 event-sourced store (MemStore; :db-api in Phase 2)
+  store.cljc                 Store protocol + MemStore (pure)
   operation.cljc             record types (Proposal/Verdict/StockSnapshot/Case/...)
+  graph.cljc                 langgraph-clj StateGraph (Phase 2; :govern interrupt-before)
+  store_datomic.cljc         langchain-store :db-api DatomicStore (Phase 2; MemStore ≡ it)
+  advisor_llm.clj            murakumo-main LLM advisor (Phase 2; JVM-only, propose-only)
 test/oteint/
   dynamics_test.cljc  charter_test.cljc  governor_test.cljc  sim_test.cljc
-  heartbeat_test.cljc
-blueprint.edn               actor blueprint (maturity :blueprint)
-deps.edn                    standalone (kernel layer has zero fleet deps)
+  heartbeat_test.cljc  graph_test.cljc  store_datomic_test.cljc  advisor_llm_test.clj
+blueprint.edn               actor blueprint
+deps.edn                    standalone kernel layer (:test) + :phase2 fleet deps
 ```
 
 ## Run
 
 ```bash
-clojure -M:test    # pure-kernel tests (no fleet deps required)
-clojure -M:lint    # clj-kondo, --fail-level error
+clojure -M:test     # pure-kernel tests (no fleet deps required)
+clojure -M:phase2   # full Phase-2: + langgraph StateGraph + langchain-store + murakumo advisor
+clojure -M:lint     # clj-kondo, --fail-level error
 ```
+
+The `:phase2` alias pulls langgraph-clj (`orgs/kotoba-lang/langgraph`), langchain +
+langchain-store, and `clojure.data.json` as local/maven deps. The murakumo-main
+advisor resolves the fleet alias (`api.murakumo.cloud/infer/models/murakumo-main`)
+and POSTs a chat-completions request with `GFTD_LLM_TOKEN`; tests inject a mock
+`call-fn` so the logic runs offline.
+
 
 Phase 2 (real langgraph-clj StateGraph + langchain-store `:db-api` store +
 real-LLM advisor via `murakumo-main`) composes via the `:dev` alias.

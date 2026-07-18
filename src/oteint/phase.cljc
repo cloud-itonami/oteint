@@ -98,6 +98,8 @@
 
 ;; ---------- chartered orchestration (G3/G7/tsukuroi + G12) ----------
 
+(declare summarize-charter)
+
 (defn run-tick-chartered
   "Case-aware governed tick — wraps run-tick with the charter
   (oteint.kernels.charter), mirroring tadori's posture:
@@ -124,33 +126,41 @@
    (run-tick-chartered events stock-of advisor append-fn facts/default-params case now
                        {:store-kind :mem :inference-gateway nil}))
   ([events stock-of advisor append-fn params case now opts]
-   (let [dry?    (ch/dry-run? case now)
+   (let [dry?   (ch/dry-run? case now)
          ;; dry-run suppresses live ledger writes (Phase 0); only counters persist
-         sink    (if dry? (fn [_]) append-fn)
-         result  (run-tick events stock-of advisor sink params)
-         stocks  (:stocks result)
-         gov     (:governor result)
-         ;; worst (most-suspicious) entity drives the B2 mass-surveillance check
-         worst   (when (seq stocks)
-                   (apply max-key (fn [[_ s]] (:suspicion s)) stocks))
-         wstk    (if worst (val worst) (sim/init-stock ""))
-         allowed (dyn/allowed-depth-for (:suspicion wstk) (:obs-depth params))
-         ;; live attribution only when a case authorizes it AND it's not dry-run
-         live?   (and (not dry?)
-                      (or (some #(= :attribute (:kind (first %))) (:human gov))
-                          (some #(= :attribute (:kind (first %))) (:approved gov))))
-         ctx     {:case case :now now
-                  :store-kind        (:store-kind opts)
-                  :inference-gateway (:inference-gateway opts)
-                  :had-live-write         live?
-                  :had-pii-write          false
-                  :pii-encrypted?         true
-                  :had-enforcement-action false
-                  :used-platform-key      false
-                  :max-obs-depth          (:max-obs-depth wstk)
-                  :allowed-obs-depth      allowed
-                  :attributed-named-indiv? false}   ; clusters only at blueprint
-         counters (ch/compute-counters ctx)
-         halted?  (ch/g12-halt? counters)]
-     {:result result :counters counters :halted? halted? :dry-run? dry?
-      :persisted? (and (not halted?) (not dry?))})))
+         sink   (if dry? (fn [_]) append-fn)
+         result (run-tick events stock-of advisor sink params)]
+     (assoc (summarize-charter (:stocks result) (:governor result) case now params opts)
+            :result result))))
+
+(defn summarize-charter
+  "Compute the charter zero-counters + G12 verdict from a tick's resulting stocks
+  and governor partition, in context (case, now, params, opts). Shared by
+  run-tick-chartered (pure orchestration) and the langgraph StateGraph :commit
+  node. Returns {:counters :halted? :dry-run? :persisted?}. Pure."
+  [stocks gov case now params opts]
+  (let [dry?    (ch/dry-run? case now)
+        ;; worst (most-suspicious) entity drives the B2 mass-surveillance check
+        worst   (when (seq stocks)
+                  (apply max-key (fn [[_ s]] (:suspicion s)) stocks))
+        wstk    (if worst (val worst) (sim/init-stock ""))
+        allowed (dyn/allowed-depth-for (:suspicion wstk) (:obs-depth params))
+        ;; live attribution only when a case authorizes it AND it's not dry-run
+        live?   (and (not dry?)
+                     (or (some #(= :attribute (:kind (first %))) (:human gov))
+                         (some #(= :attribute (:kind (first %))) (:approved gov))))
+        ctx     {:case case :now now
+                 :store-kind        (:store-kind opts)
+                 :inference-gateway (:inference-gateway opts)
+                 :had-live-write         live?
+                 :had-pii-write          false
+                 :pii-encrypted?         true
+                 :had-enforcement-action false
+                 :used-platform-key      false
+                 :max-obs-depth          (:max-obs-depth wstk)
+                 :allowed-obs-depth      allowed
+                 :attributed-named-indiv? false}   ; clusters only at blueprint
+        counters (ch/compute-counters ctx)
+        halted?  (ch/g12-halt? counters)]
+    {:counters counters :halted? halted? :dry-run? dry?
+     :persisted? (and (not halted?) (not dry?))}))
