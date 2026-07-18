@@ -1,0 +1,27 @@
+{:paths ["src"]
+ ;; Standalone / zero-external-dep at the kernel layer (ADR-2607176501 /
+ ;; ADR-2607011000 fleet standalone convention, same pattern as
+ ;; cloud-itonami-isic-1075 / cloud-itonami-jsic-4721). The pure system-dynamics
+ ;; + Governor kernels depend only on clojure.core, so tests and lint run with
+ ;; no fleet :local/root deps.
+ :deps {org.clojure/clojure {:mvn/version "1.12.4"}}
+
+ :aliases
+ {;; Phase-2 composition: the real langgraph-clj StateGraph + langchain-store
+  ;; :db-api store wire in here (ADR-2607182000 §5/§7). Not required for the
+  ;; blueprint pure-kernel tests. Paths follow the build-actor convention.
+  :dev {:override-deps {}
+        :extra-deps {io.github.com-junkawasaki/langgraph-clj
+                     {:local/root "../../com-junkawasaki/langgraph-clj"}}}
+
+  ;; static analysis — clj-kondo from deps (no binary), errors fail CI.
+  ;; (matches cloud-itonami/deps.edn :lint shape)
+  :lint {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2024.11.14"}}
+         :main-opts    ["-m" "clj-kondo.main"
+                        "--lint" "src" "test"
+                        "--fail-level" "error"]}
+
+  ;; pure-kernel test runner (no fleet deps required).
+  ;; uses test/oteint/test_runner.clj (clojure.test has no -main of its own).
+  :test {:extra-paths ["test"]
+         :main-opts    ["-m" "oteint.test-runner"]}}}

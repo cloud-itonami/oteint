@@ -1,0 +1,19 @@
+{:oteint.blueprint/id "com-etzhayyim-oteint"
+ :oteint.blueprint/name "おてんとさま (Otentosama) — all-seeing sun: system-dynamics activity loop for cybercrime actor attribution"
+ :oteint.blueprint/domain :security/threat-attribution
+ :oteint.blueprint/governor :attribution-governor
+ :oteint.blueprint/metaphor "太陽は照らす、裁かない — the sun observes+records; a separate lineage (Governor) judges"
+ :oteint.blueprint/topology "OTEINT-AR ⊣ AttributionGovernor"
+ :oteint.blueprint/required-technologies [:identity :audit-ledger :system-dynamics :governor]
+ :oteint.blueprint/maturity :blueprint
+ :oteint.blueprint/rad-repo "github.com/etzhayyim/com-etzhayyim-oteint"
+ :oteint.blueprint/rad-did-web "did:web:etzhayyim.github.io:com-etzhayyim-oteint"
+ :oteint.blueprint/adr "adr-2607182000-com-etzhayyim-oteint-attribution-actor"
+ :oteint.blueprint/stocks ["suspicion" "evidence" "coherence" "exposure-cost"]
+ :oteint.blueprint/flows ["inflow-suspicion" "decay-suspicion" "coherence-easing" "fp-correction-outflow"]
+ :oteint.blueprint/loops [:R1-reinforcing-bounded :B1-false-positive-guard :B2-proportionality :B3-evidence-expiry]
+ :oteint.blueprint/governor-invariants [:closed-allowlist :evidence-floor :coherence-floor
+                                        :false-positive-guard :proportionality-audit :disclosure-guard]
+ ;; Defensive scope (safety floor). This actor NEVER does these.
+ :oteint.blueprint/never #{:mass-surveillance :public-doxxing :vigilante-action :law-enforcement-direct-action
+                           :self-authorized-block :subject-contact}}

@@ -1,0 +1,17 @@
+;; clj-kondo config for com-etzhayyim-oteint (おてんとさま attribution actor).
+;; Policy mirrors cloud-itonami/.clj-kondo/config.edn: ERROR-level only for
+;; :syntax. clj-kondo analyzes .cljc under BOTH :clj and :cljs, so the portable
+;; math (#?(:clj (Math/exp ...) :cljs (js/Math.exp ...))) is reported as
+;; unresolved on the opposite host — those are real cross-host splits, not
+;; bugs, so they stay at :warning. `--fail-level error` keeps :lint meaningful.
+{:skip-comments true
+ :linters {:unresolved-symbol {:level :warning}
+           :unresolved-namespace {:level :warning}
+           :syntax {:level :error}
+           :unused-binding {:level :warning}
+           :unused-namespace {:level :warning}
+           :redundant-expression {:level :warning}
+           :redundant-let {:level :warning}
+           :misplaced-docstring {:level :off}
+           :private-call {:level :warning}
+           :reader-conditional {:level :warning}}}

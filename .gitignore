@@ -1,0 +1,16 @@
+/target
+/.cpcache
+/.shadow-cljs
+/.nbb
+/.clj-kondo/.cache
+/node_modules
+
+# CACAO actor identity — NEVER commit the private key (safety floor).
+# The actor's key-derived IPNS name IS its attribution graph; the key itself
+# stays local. See ADR-2607182000 §7 + build-actor CACAO section.
+/.oteint/identity.edn
+/.oteint/*.key
+/.oteint/*.pem
+
+# local scratch
+/.local
