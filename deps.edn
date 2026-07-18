@@ -7,10 +7,9 @@
 
  :aliases
  {;; Phase-2 composition deps (langgraph-clj StateGraph + langchain.db :db-api
-  ;;  store + langchain-store mechanics). NOT required by the pure-kernel :test
-  ;;  path — Phase-2 namespaces live in src/ but are only loaded under :phase2.
-  ;;  langgraph-clj is at the canonical fleet path orgs/kotoba-lang/langgraph
-  ;;  (same checkout cloud-itonami uses). The :override-deps pins langgraph's
+  ;;  store + langchain-store + ed25519/ipns for the CACAO identity). NOT
+  ;;  required by the pure-kernel :test path. langgraph-clj is at the canonical
+  ;;  fleet path orgs/kotoba-lang/langgraph. The :override-deps pins langgraph's
   ;;  transitive langchain dep to the local checkout so no network is needed.
   :dev {:override-deps {io.github.kotoba-lang/langchain
                         {:local/root "../../kotoba-lang/langchain"}}
@@ -20,6 +19,10 @@
                      {:local/root "../../kotoba-lang/langchain"}
                      io.github.kotoba-lang/langchain-store
                      {:local/root "../../kotoba-lang/langchain-store"}
+                     io.github.kotoba-lang/ed25519
+                     {:local/root "../../kotoba-lang/ed25519"}
+                     io.github.kotoba-lang/ipns
+                     {:local/root "../../kotoba-lang/tech-ipfs-specs-ipns"}
                      org.clojure/data.json {:mvn/version "2.5.1"}}}
 
   ;; static analysis — clj-kondo from deps (no binary), errors fail CI.
@@ -33,7 +36,7 @@
          :main-opts    ["-m" "oteint.test-runner"]}
 
   ;; Phase-2 end-to-end: pure kernels + langgraph StateGraph + langchain-store
-  ;; :db-api store + murakumo-main advisor. `clojure -M:phase2`.
+  ;; :db-api store + murakumo-main advisor + CACAO identity. `clojure -M:phase2`.
   :phase2 {:extra-paths ["test"]
            :override-deps {io.github.kotoba-lang/langchain
                            {:local/root "../../kotoba-lang/langchain"}}
@@ -43,5 +46,17 @@
                         {:local/root "../../kotoba-lang/langchain"}
                         io.github.kotoba-lang/langchain-store
                         {:local/root "../../kotoba-lang/langchain-store"}
+                        io.github.kotoba-lang/ed25519
+                        {:local/root "../../kotoba-lang/ed25519"}
+                        io.github.kotoba-lang/ipns
+                        {:local/root "../../kotoba-lang/tech-ipfs-specs-ipns"}
                         org.clojure/data.json {:mvn/version "2.5.1"}}
-           :main-opts ["-m" "oteint.dev-test-runner"]}}}
+           :main-opts ["-m" "oteint.dev-test-runner"]}
+
+  ;; CACAO identity tool: generate/load .oteint/identity.edn, print did + graph.
+  ;; `clojure -M:identity show oteint`. Seed stays gitignored.
+  :identity {:extra-deps {io.github.kotoba-lang/ed25519
+                          {:local/root "../../kotoba-lang/ed25519"}
+                          io.github.kotoba-lang/ipns
+                          {:local/root "../../kotoba-lang/tech-ipfs-specs-ipns"}}
+             :main-opts ["-m" "oteint.identity"]}}}

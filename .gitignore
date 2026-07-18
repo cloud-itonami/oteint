@@ -12,5 +12,10 @@
 /.oteint/*.key
 /.oteint/*.pem
 
+# identity-test scratch (oteint.identity-test creates .oteint-cov-*/ temp dirs;
+# it cleans up in finally, but gitignore is the safety net so a crashed test
+# can never leak a private key into a commit).
+/.oteint-cov-*/
+
 # local scratch
 /.local
