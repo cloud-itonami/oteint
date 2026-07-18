@@ -4,13 +4,17 @@
   non-zero on any failure/error so `clojure -M:test` is CI-friendly."
   (:require [clojure.test :refer [run-tests]]
             [oteint.dynamics-test]
+            [oteint.charter-test]
             [oteint.governor-test]
-            [oteint.sim-test])
+            [oteint.sim-test]
+            [oteint.heartbeat-test])
   (:gen-class))
 
 (defn -main [& _]
   (let [res (run-tests 'oteint.dynamics-test
+                       'oteint.charter-test
                        'oteint.governor-test
-                       'oteint.sim-test)]
+                       'oteint.sim-test
+                       'oteint.heartbeat-test)]
     (flush)
     (System/exit (if (or (pos? (:fail res 0)) (pos? (:error res 0))) 1 0))))

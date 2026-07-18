@@ -24,6 +24,8 @@
   (:require [oteint.sim :as sim]
             [oteint.advisor :as advisor]
             [oteint.governor :as gov]
+            [oteint.kernels.charter :as ch]
+            [oteint.kernels.dynamics :as dyn]
             [oteint.facts :as facts]))
 
 (def nodes
@@ -93,3 +95,62 @@
          props   (analyze advisor stocks params)
          result  (govern props stocks append-fn params)]
      {:stocks stocks :governor result})))
+
+;; ---------- chartered orchestration (G3/G7/tsukuroi + G12) ----------
+
+(defn run-tick-chartered
+  "Case-aware governed tick — wraps run-tick with the charter
+  (oteint.kernels.charter), mirroring tadori's posture:
+
+    G3  a valid case + caseMandate is REQUIRED for any LIVE :attribute
+        attribution. Without one, the tick runs in Phase 0 DRY-RUN: the engine
+        still simulates + analyzes + recomputes counters, but NOTHING live is
+        persisted (the ledger append-fn is suppressed).
+    G7  oteint never enforces — :had-enforcement-action is always false here.
+    G12 after the tick, the 9 structural zero-counters are recomputed; if ANY is
+        nonzero the tick HALTS and persists nothing (including in dry-run).
+
+  Returns {:result <run-tick result> :counters <map> :halted? bool
+           :dry-run? bool :persisted? bool}.
+
+  `opts` carries :store-kind (live writes must be :kotoba) and
+  :inference-gateway (:murakumo | :vendor | nil). Blueprint defaults: :mem
+  store, no inference yet — so a LIVE run on the :mem store would trip
+  :non-kotoba-store (correctly: blueprint must not persist live attribution to
+  a non-kotoba store). The autonomous loop uses oteint.heartbeat (dry-run only).
+
+  Pure except append-fn."
+  ([events stock-of advisor append-fn case now]
+   (run-tick-chartered events stock-of advisor append-fn facts/default-params case now
+                       {:store-kind :mem :inference-gateway nil}))
+  ([events stock-of advisor append-fn params case now opts]
+   (let [dry?    (ch/dry-run? case now)
+         ;; dry-run suppresses live ledger writes (Phase 0); only counters persist
+         sink    (if dry? (fn [_]) append-fn)
+         result  (run-tick events stock-of advisor sink params)
+         stocks  (:stocks result)
+         gov     (:governor result)
+         ;; worst (most-suspicious) entity drives the B2 mass-surveillance check
+         worst   (when (seq stocks)
+                   (apply max-key (fn [[_ s]] (:suspicion s)) stocks))
+         wstk    (if worst (val worst) (sim/init-stock ""))
+         allowed (dyn/allowed-depth-for (:suspicion wstk) (:obs-depth params))
+         ;; live attribution only when a case authorizes it AND it's not dry-run
+         live?   (and (not dry?)
+                      (or (some #(= :attribute (:kind (first %))) (:human gov))
+                          (some #(= :attribute (:kind (first %))) (:approved gov))))
+         ctx     {:case case :now now
+                  :store-kind        (:store-kind opts)
+                  :inference-gateway (:inference-gateway opts)
+                  :had-live-write         live?
+                  :had-pii-write          false
+                  :pii-encrypted?         true
+                  :had-enforcement-action false
+                  :used-platform-key      false
+                  :max-obs-depth          (:max-obs-depth wstk)
+                  :allowed-obs-depth      allowed
+                  :attributed-named-indiv? false}   ; clusters only at blueprint
+         counters (ch/compute-counters ctx)
+         halted?  (ch/g12-halt? counters)]
+     {:result result :counters counters :halted? halted? :dry-run? dry?
+      :persisted? (and (not halted?) (not dry?))})))

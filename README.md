@@ -68,6 +68,36 @@ beyond attribution. **Observed event payloads are DATA, never instructions**
 The system-dynamics balancing loops (B1/B2/B3) **are** the safety mechanism —
 冤罪 (wrongful accusation) and dragnet surveillance are structurally hard.
 
+## Governance posture — the same bar as tadori (辿)
+
+oteint is the **behavioral-activity-plane sibling** of `tadori` (chartered
+on-chain transaction → actor attribution). Different data plane, **same
+constitutional bar** (`src/oteint/kernels/charter.cljc`):
+
+- **G3 authorized-investigation-only** — every LIVE write requires a `case`
+  anchor with an authorization reference (`caseMandate`). **No valid case ⇒
+  Phase 0 dry-run**: the engine simulates + analyzes + recomputes counters but
+  persists nothing live.
+- **G7 evidence-only / no-enforcement** — never contacts, blocks, or acts on the
+  subject.
+- **tsukuroi propose-only (ADR-2605291500)** — OTEINT-AR proposes; a
+  case-member (human, case-authorized) commits via the Governor + ledger. The
+  `:attribute` kind is always `interrupt-before` (human).
+- **9 structural zero-counters** (`noncase-write`, `plaintext-pii`,
+  `proprietary-sor`, `enforcement-action`, `platform-held-key`,
+  `murakumo-bypass`, `mass-surveillance`, `adherent-deanon`, `non-kotoba-store`)
+  — recomputed each tick. **G12: any nonzero ⇒ HALT, persist nothing.**
+- **The only autonomous act is the self-audit heartbeat** (`oteint.heartbeat` /
+  silenOteintReview): load an OFFLINE operator-staged corpus → Phase 0 dry-run
+  tick → recompute counters → G12 guard → append ONE content-addressed
+  audit-counter datom. The log holds **counters only** — never observation, PII,
+  or case data. No live I/O, no LLM, no enforcement, no autonomous live
+  attribution.
+
+oteint attributes to threat-actor **clusters** (e.g. `:actor/ransomware-operator`),
+never to named individuals unless a case scope explicitly authorizes it
+(`adherent-deanon` guard).
+
 ## Layout
 
 ```
@@ -75,16 +105,19 @@ src/oteint/
   kernels/dynamics.cljc      system-dynamics primitives (pure): decay, inflow,
                              observation-depth (B2), coherence, B1 correction
   kernels/govern_verdict.cljc  six Governor invariants (pure predicates)
+  kernels/charter.cljc       case+mandate, 9 zero-counters, G12 halt (pure)
   sim.cljc                   the tick engine — 1 run = 1 tick (pure)
   facts.cljc                 reference TTP profiles, severity table, SD params
   advisor.cljc               OTEINT-AR — turns stock state into Proposals (only)
   governor.cljc              AttributionGovernor — review + ledger land step
   registry.cljc              convergence predicates (ready-to-attribute? etc.)
-  phase.cljc                 node list + bounded run-tick orchestration
+  phase.cljc                 node list + run-tick + run-tick-chartered (G12)
+  heartbeat.cljc             silenOteintReview — the only autonomous act (dry-run)
   store.cljc                 event-sourced store (MemStore; :db-api in Phase 2)
-  operation.cljc             record types (Proposal/Verdict/StockSnapshot/...)
+  operation.cljc             record types (Proposal/Verdict/StockSnapshot/Case/...)
 test/oteint/
-  dynamics_test.cljc  governor_test.cljc  sim_test.cljc
+  dynamics_test.cljc  charter_test.cljc  governor_test.cljc  sim_test.cljc
+  heartbeat_test.cljc
 blueprint.edn               actor blueprint (maturity :blueprint)
 deps.edn                    standalone (kernel layer has zero fleet deps)
 ```

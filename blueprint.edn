@@ -4,7 +4,8 @@
  :oteint.blueprint/governor :attribution-governor
  :oteint.blueprint/metaphor "太陽は照らす、裁かない — the sun observes+records; a separate lineage (Governor) judges"
  :oteint.blueprint/topology "OTEINT-AR ⊣ AttributionGovernor"
- :oteint.blueprint/required-technologies [:identity :audit-ledger :system-dynamics :governor]
+ :oteint.blueprint/sibling "tadori (辿) — chartered on-chain transaction→actor attribution; oteint is the behavioral-activity-plane sibling (distinct data plane, same governance bar)"
+ :oteint.blueprint/required-technologies [:identity :audit-ledger :system-dynamics :governor :case-mandate]
  :oteint.blueprint/maturity :blueprint
  :oteint.blueprint/rad-repo "github.com/etzhayyim/com-etzhayyim-oteint"
  :oteint.blueprint/rad-did-web "did:web:etzhayyim.github.io:com-etzhayyim-oteint"
@@ -14,6 +15,12 @@
  :oteint.blueprint/loops [:R1-reinforcing-bounded :B1-false-positive-guard :B2-proportionality :B3-evidence-expiry]
  :oteint.blueprint/governor-invariants [:closed-allowlist :evidence-floor :coherence-floor
                                         :false-positive-guard :proportionality-audit :disclosure-guard]
+ ;; Governance posture — mirrors tadori (辿), the chartered actor-attribution actor.
+ :oteint.blueprint/charter-posture "G3 authorized-investigation-only / G7 evidence-only-no-enforcement / tsukuroi propose-only (ADR-2605291500) / caseMandate required — no valid case ⇒ Phase 0 dry-run"
+ :oteint.blueprint/zero-counters [:noncase-write :plaintext-pii :proprietary-sor :enforcement-action
+                                  :platform-held-key :murakumo-bypass :mass-surveillance :adherent-deanon :non-kotoba-store]
+ :oteint.blueprint/g12 "any nonzero zero-counter ⇒ HALT, persist nothing"
+ :oteint.blueprint/autonomous-act "self-audit heartbeat ONLY (silenOteintReview) — never autonomous live attribution"
  ;; Defensive scope (safety floor). This actor NEVER does these.
  :oteint.blueprint/never #{:mass-surveillance :public-doxxing :vigilante-action :law-enforcement-direct-action
-                           :self-authorized-block :subject-contact}}
+                           :self-authorized-block :subject-contact :autonomous-live-attribution}}
