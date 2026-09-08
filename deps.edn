@@ -3,7 +3,12 @@
  ;; ADR-2607011000 fleet standalone convention). The pure system-dynamics +
  ;; Governor + charter kernels depend only on clojure.core, so the pure-kernel
  ;; :test and :lint run with no fleet :local/root deps.
- :deps {org.clojure/clojure {:mvn/version "1.12.4"}}
+ :deps {
+        ;; kotoba.lang.text, not clojure.string. Pinned as an explicit floor:
+        ;; tools.deps takes the NEWEST sha it is shown, so without a floor here
+        ;; this repo silently rides whatever a sibling happens to name.
+        io.github.kotoba-lang/text {:git/sha "73bdb13ae7a3d004b44bca08be03a3191157a38f"}
+       org.clojure/clojure {:mvn/version "1.12.4"}}
 
  :aliases
  {;; Phase-2 composition deps (langgraph-clj StateGraph + langchain.db :db-api

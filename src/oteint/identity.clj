@@ -14,7 +14,7 @@
   included here). JVM-only (java.security.SecureRandom / java.nio.file)."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [ed25519.core :as ed]
             [ipns.core :as ipns])
   (:import (java.security SecureRandom)
