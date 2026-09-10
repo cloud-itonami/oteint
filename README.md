@@ -72,7 +72,7 @@ The system-dynamics balancing loops (B1/B2/B3) **are** the safety mechanism —
 
 oteint is the **behavioral-activity-plane sibling** of `tadori` (chartered
 on-chain transaction → actor attribution). Different data plane, **same
-constitutional bar** (`src/oteint/kernels/charter.cljc`):
+constitutional bar** (`src/oteint/kernels/charter.kotoba`):
 
 - **G3 authorized-investigation-only** — every LIVE write requires a `case`
   anchor with an authorization reference (`caseMandate`). **No valid case ⇒
