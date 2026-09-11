@@ -128,9 +128,9 @@ deps.edn                    standalone kernel layer (:test) + :phase2 fleet deps
 ## Run
 
 ```bash
-clojure -M:test     # pure-kernel tests (no fleet deps required)
-clojure -M:phase2   # full Phase-2: + langgraph StateGraph + langchain-store + murakumo advisor
-clojure -M:lint     # clj-kondo, --fail-level error
+kbb -M:test     # pure-kernel tests (no fleet deps required)
+kbb -M:phase2   # full Phase-2: + langgraph StateGraph + langchain-store + murakumo advisor
+kbb -M:lint     # clj-kondo, --fail-level error
 ```
 
 The `:phase2` alias pulls langgraph-clj (`orgs/kotoba-lang/langgraph`), langchain +

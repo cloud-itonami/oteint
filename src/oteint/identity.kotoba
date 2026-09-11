@@ -89,7 +89,7 @@
     (assoc identity :graph (graph-name (:seed-hex identity)))))
 
 (defn -main
-  "usage: clojure -M:identity show <actor>
+  "usage: kbb -M:identity show <actor>
   Prints the actor's did:key + IPNS graph name. The private seed stays in
   .{actor}/identity.edn (gitignored) — never printed."
   [& args]
@@ -102,5 +102,5 @@
         (println "graph:" (:graph id))
         (println (str "(private seed stays in ." actor "/identity.edn, gitignored — never printed)")))
       :else
-      (do (println "usage: clojure -M:identity show <actor>")
+      (do (println "usage: kbb -M:identity show <actor>")
           (System/exit 1)))))
