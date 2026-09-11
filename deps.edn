@@ -39,7 +39,7 @@
          :main-opts    ["-m" "oteint.test-runner"]}
 
   ;; Phase-2 end-to-end: pure kernels + langgraph StateGraph + langchain-store
-  ;; :db-api store + murakumo-main advisor + CACAO identity. `clojure -M:phase2`.
+  ;; :db-api store + murakumo-main advisor + CACAO identity. `kbb -M:phase2`.
   :phase2 {:extra-paths ["test"]
            :override-deps {io.github.kotoba-lang/langchain
                            {:local/root "../../kotoba-lang/langchain"}}
@@ -55,7 +55,7 @@
            :main-opts ["-m" "oteint.dev-test-runner"]}
 
   ;; CACAO identity tool: generate/load .oteint/identity.edn, print did + graph.
-  ;; `clojure -M:identity show oteint`. Seed stays gitignored.
+  ;; `kbb -M:identity show oteint`. Seed stays gitignored.
   :identity {:extra-deps {io.github.kotoba-lang/org-ietf-ed25519
                           {:local/root "../../kotoba-lang/org-ietf-ed25519"}
                           io.github.kotoba-lang/ipns
