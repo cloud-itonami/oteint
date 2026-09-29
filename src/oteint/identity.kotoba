@@ -1,6 +1,6 @@
 (ns oteint.identity
   "CACAO / did:key identity for the oteint actor — minted and held in the actor's
-  OWN runtime (CLAUDE.md kotoba-server: 'actor が自分の鍵で CACAO を自己発行'),
+  OWN runtime (AGENTS.md kotoba-server: 'actor が自分の鍵で CACAO を自己発行'),
   never a shared operator secret. Persists the raw Ed25519 seed at
   .oteint/identity.edn (gitignored, NEVER committed) and derives the did:key
   (z6Mk…) + the key-derived IPNS graph name (k51qzi…).
