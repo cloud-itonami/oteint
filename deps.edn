@@ -21,7 +21,7 @@
         :extra-deps {io.github.com-junkawasaki/langgraph-clj
                      {:local/root "../../kotoba-lang/langgraph"}
                      io.github.kotoba-lang/langchain-store
-                     {:local/root "../../kotoba-lang/langchain-store"}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.langchainStore"}
                      io.github.kotoba-lang/org-ietf-ed25519
                      {:local/root "../../kotoba-lang/org-ietf-ed25519"}
                      io.github.kotoba-lang/ipns
@@ -46,7 +46,7 @@
            :extra-deps {io.github.com-junkawasaki/langgraph-clj
                         {:local/root "../../kotoba-lang/langgraph"}
                         io.github.kotoba-lang/langchain-store
-                        {:local/root "../../kotoba-lang/langchain-store"}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.langchainStore"}
                         io.github.kotoba-lang/org-ietf-ed25519
                         {:local/root "../../kotoba-lang/org-ietf-ed25519"}
                         io.github.kotoba-lang/ipns
