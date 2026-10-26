@@ -20,7 +20,7 @@
   ;;  fleet path orgs/kotoba-lang/langgraph. The :override-deps pins langgraph's
   ;;  transitive langchain dep to the local checkout so no network is needed.
   :dev {:override-deps {io.github.kotoba-lang/langchain
-                        {:local/root "../../kotoba-lang/langchain"}}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.langchain"}}
         :extra-deps {io.github.com-junkawasaki/langgraph-clj
                      {:local/root "../../kotoba-lang/langgraph"}
                      io.github.kotoba-lang/langchain-store
@@ -45,7 +45,7 @@
   ;; :db-api store + murakumo-main advisor + CACAO identity. `kbb -M:phase2`.
   :phase2 {:extra-paths ["test"]
            :override-deps {io.github.kotoba-lang/langchain
-                           {:local/root "../../kotoba-lang/langchain"}}
+        {:local/root "../../kotoba-lang/kotoba/lib/kotoba.langchain"}}
            :extra-deps {io.github.com-junkawasaki/langgraph-clj
                         {:local/root "../../kotoba-lang/langgraph"}
                         io.github.kotoba-lang/langchain-store
